@@ -21,6 +21,10 @@ def save_todos(todos):
 class Todoin(BaseModel):
     task : str
 
+class TodoUpdate(BaseModel):
+    task : str | None = None
+    done : bool | None = None
+
 app = FastAPI()
 
 @app.get("/")
@@ -63,3 +67,18 @@ def delete_todos(todo_id:int):
     
     raise HTTPException(status_code=404, detail="没有这条待办")
 
+@app.patch('/todos/{todo_id}')
+def update_todos(todo_id : int,payload : TodoUpdate):
+    todos = load_todos()
+
+    for t in todos:
+        if t['id'] == todo_id:
+            if payload.task is not None:
+                t['task'] = payload.task
+            if payload.done is not None:
+                t['done'] = payload.done
+
+            save_todos(todos)
+            return t
+    raise HTTPException(status_code=404,detail="没有这条待办")
+        

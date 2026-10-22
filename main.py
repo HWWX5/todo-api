@@ -31,6 +31,16 @@ def home():
 def list_todos():
     return load_todos()
 
+@app.get("/todos/{todo_id}")
+def one_todos(todo_id:int):
+    todos = load_todos()
+
+    for t in todos:
+        if t['id'] == todo_id:
+            return t
+    raise HTTPException(status_code=404,detail='没有这条待办')
+
+
 @app.post('/todos')
 def add_todos(todo:Todoin):
     todos = load_todos()
